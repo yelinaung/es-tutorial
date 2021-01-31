@@ -1,0 +1,132 @@
+GET _cat/health
+
+GET /_cat/indices?v
+
+GET /_cat/shards
+
+DELETE /pages
+
+PUT /products_v2/_settings
+{
+  "settings": {
+    "number_of_shards": 2,
+    "number_of_replicas": 2
+  }
+}
+
+GET _cluster/allocation/explain?pretty
+
+POST /products/_doc
+{
+  "name": "Toaser",
+  "price": 42,
+  "in_stock": 160
+}
+
+
+POST /products/_doc/100
+{
+  "name": "Dell Laptop",
+  "price": 3100,
+  "in_stock": 30
+}
+
+
+GET /products/_doc/100
+
+# update the API
+POST /products/_update/100
+{
+  "doc": {
+    "in_stock": 28
+  }
+}
+
+POST /products/_update/100
+{
+  "script": {
+    "source": "ctx._source.in_stock = 10"
+  }
+}
+
+POST /products/_update/100
+{
+  "script": {
+    "source": "ctx._source.in_stock -= params.quantity",
+    "params": {
+      "quantity": 4
+    }
+  }
+}
+
+POST /products/_update/102
+{
+  "script": {
+    "source": "ctx._source.in_stock++"
+  },
+  "upsert": {
+    "name": "Blender",
+    "price": 399,
+    "in_stock": 5
+  }
+}
+
+GET /products/_doc/102
+
+DELETE /products/_doc/101
+
+
+
+POST /products/_update/102?if_primary_term=6&if_seq_no=6
+{
+  "doc": {
+    "in_stock": 122
+  }  
+}
+
+GET /products/_search
+
+# update by query
+POST /products/_update_by_query
+{
+  "conflicts": "proeed", 
+  "script": {
+    "source": "ctx._source.in_stock--",
+    "lang": "painless"
+  },
+  "query": {
+    "match_all": {}
+  }
+}
+
+# update by query
+POST /products_v2/_delete_by_query
+{
+  "conflicts": "proeed", 
+  "script": {
+    "source": "ctx._source.in_stock--",
+    "lang": "painless"
+  },
+  "query": {
+    "match_all": {}
+  }
+}
+
+
+# BULK API
+# index action will REPLACE if the document already exists
+# create action will FAIL if the document already exists
+POST /_bulk
+{ "index": { "_index": "products", "_id": 200 } }
+{ "name": "Espresso Machine", "price": 199, "in_stock": 6 }
+{ "create": { "_index": "products", "_id": 201 } }
+{ "name": "Mixer", "price": 149, "in_stock": 26 }
+
+
+GET /products/_search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
