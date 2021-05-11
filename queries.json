@@ -130,3 +130,15 @@ GET /products/_search
   }
 }
 
+
+POST /products/_bulk
+{ "update": { "_id": 201 } }
+{ "doc": { "price": 199 } }
+{ "delete": { "_id": 200 } }
+
+POST /_analyze
+{
+  "text": "2 guys walk into   a bar, but the third... DUCKS! :-)",
+  "analyzer": "standard"
+}
+
