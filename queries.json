@@ -142,3 +142,72 @@ POST /_analyze
   "analyzer": "standard"
 }
 
+# there is no such thing as an array
+# this will be merged as text with a space in between
+POST /_analyze
+{
+  "text": ["Strings are simply", "merged togeter", "you see?"],
+  "analyzer": "standard"
+}
+
+PUT /reviews
+{
+  "mappings": {
+    "properties": {
+      "rating": { "type": "float" },
+      "content": { "type": "text" },
+      "product_id": { "type": "integer" },
+      "author": { 
+        "properties": {
+          "first_name": { "type": "text" },
+           "last_name": { "type": "text" },
+           "email": { "type": "keyword" }        
+        }
+      }
+    }
+  }
+}
+
+POST /reviews/_doc
+{
+  "rating": 5.0,
+  "content": "Very nice!",
+  "product_id": 123,
+  "author": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "johndoe@example.com"
+  }
+}
+
+# this won't work because author is not an object
+POST /reviews/_doc
+{
+  "rating": 5.0,
+  "content": "Very nice!",
+  "product_id": 123,
+  "author": 1223
+}
+
+GET /reviews/_search
+
+# Getting the mapping of an author
+GET /reviews/_mapping/field/author.email
+
+
+# using dot notation
+PUT /reviews_with_dot_notation
+{
+  "mappings": {
+    "properties": {
+      "rating": { "type": "float" },
+      "content": { "type": "text" },
+      "product_id": { "type": "integer" },
+      "author.email": { "type": "text" },
+      "author.first_name": { "type": "text" },
+      "author.last_name": { "type": "text" } 
+    }
+  }
+}
+
+GET /reviews_with_dot_notation/_mapping
