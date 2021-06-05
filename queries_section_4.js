@@ -314,3 +314,49 @@ POST /muti_field_test/_delete_by_query
   }
 }
 
+# Index template
+PUT /_template/logs
+{
+  "index_patterns": [
+    "my-logs-*"
+  ],
+  "settings": {
+    "number_of_shards": 5,
+    "index.mapping.coerce": false
+  },
+  "mappings": {
+    "properties": {
+      "@timestamp": {
+        "type": "date"
+      },
+      "url.original": {
+        "type": "keyword"
+      },
+      "referrer": {
+        "type": "text"
+      },
+      "status_code": {
+        "type": "long"
+      }
+    }
+  }
+}
+
+PUT /my-logs-2021-01-01
+
+GET /my-logs-2021-01-01
+
+# getting the index template
+GET /_template/logs
+
+PUT /_template/logs
+{
+  "settings": {
+    "number_of_shards": 3
+  },
+  "index_patterns": [
+    "my-logs-*"
+  ]
+}
+
+
