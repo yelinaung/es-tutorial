@@ -211,3 +211,104 @@ PUT /reviews_with_dot_notation
 }
 
 GET /reviews_with_dot_notation/_mapping
+
+
+### Dates
+
+# update
+PUT /reviews/_doc/3
+{
+  "created_at": "2020-03-25T23:39:31Z",
+  "author": {
+    "first_name": "Spencer",
+    "last_name": "Pearson"
+  }
+}
+
+# with timezone
+PUT /reviews/_doc/4
+{
+  "created_at": "2020-03-24T23:39:31+08:00",
+  "author": {
+    "first_name": "Conor",
+    "last_name": "McGregor"
+  }
+}
+
+# EPOCH
+PUT /reviews/_doc/4
+{
+  "created_at": 1622643878713143,
+  "author": {
+    "first_name": "Adam",
+    "last_name": "McKay"
+  }
+}
+
+
+### NULL keyowrd 
+
+PUT my-index-with-null
+{
+  "mappings": {
+    "properties": {
+      "status_code": {
+        "type":       "keyword",
+        "null_value": "NULL" 
+      }
+    }
+  }
+}
+
+PUT my-index-with-null/_doc/1
+{
+  "status_code": null
+}
+
+PUT my-index-with-null/_doc/2
+{
+  "status_code": []
+}
+
+PUT my-index-with-null/_doc/3
+{
+  "status_code": 200
+}
+
+GET my-index-with-null/_search
+{
+  "query": {
+    "term": {
+      "status_code": "NULL"
+    }
+  }
+}
+
+### Updating mapping
+GET /reviews/_mapping
+
+PUT /reviews/_mapping
+{
+  "properies": {
+    "author": {
+      "properties": {
+        "product_id": {
+          "type": "keyword"
+        }
+      }
+    }
+  }
+}
+# this will throw an error
+
+
+# reindex api
+POST /_reindex
+{
+  "source": {
+    "index": "reviews"
+  },
+  "dest": {
+    "index": "reviews_v2"
+  }
+}
